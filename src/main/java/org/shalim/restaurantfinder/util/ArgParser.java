@@ -25,13 +25,13 @@ public class ArgParser {
 	}
 
 	private static Options createOptions() {
-		Options options = new Options();
 		Option path = new Option("p", "path", true, "Restaurants SQLite database file path");
 		path.setRequired(true);
 
 		Option apiKey = new Option("k", "key", true, "Google Places API key");
 		apiKey.setRequired(true);
 
+		Options options = new Options();
 		options.addOption(path);
 		options.addOption(apiKey);
 
