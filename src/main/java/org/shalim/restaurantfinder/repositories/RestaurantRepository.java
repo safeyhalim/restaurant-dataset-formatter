@@ -32,9 +32,7 @@ public class RestaurantRepository {
 	public List<Restaurant> getAllRestaurants() throws SQLException {
 		ResultSet rs = null;
 		try {
-			Connection connection = connect();
-	        Statement statement = connection.createStatement();
-	        rs = statement.executeQuery(String.format("select %s, %s from restaurant", COL_ID, COL_GOOGLE_PLACE_ID));
+	        rs = createStatement().executeQuery(String.format("select %s, %s from restaurant", COL_ID, COL_GOOGLE_PLACE_ID));
 	        List<Restaurant> restaurants = new ArrayList<Restaurant>();
 	        while (rs.next()) {
 	        	Restaurant restaurant = new Restaurant(rs.getInt(COL_ID), rs.getString(COL_GOOGLE_PLACE_ID));
@@ -46,6 +44,26 @@ public class RestaurantRepository {
 				rs.close();
 			}
 		}
-        
+	}
+	
+	public List<String> getAllRestauratsGooglePlacesIds() throws SQLException {
+		ResultSet rs = null;
+		try {
+	        rs = createStatement().executeQuery(String.format("select %s from restaurant", COL_GOOGLE_PLACE_ID));
+	        List<String> googlePlacesIds = new ArrayList<String>();
+	        while (rs.next()) {
+	        	googlePlacesIds.add(rs.getString(COL_GOOGLE_PLACE_ID));
+	        }
+	        return googlePlacesIds;
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+		}
+	}
+	
+	private Statement createStatement() throws SQLException {
+		Connection connection = connect();
+        return connection.createStatement();
 	}
 }
