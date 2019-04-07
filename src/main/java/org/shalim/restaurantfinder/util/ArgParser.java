@@ -4,6 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.shalim.restaurantfinder.domain.Input;
@@ -20,7 +21,7 @@ public class ArgParser {
 			new HelpFormatter().printHelp("restaurant-finder", options);
 			System.exit(1);
 		}
-		Input input = new Input(cmd.getOptionValue("path"), cmd.getOptionValue("key"));
+		Input input = new Input(cmd.getOptionValue("path"), cmd.getOptionValue("key"), cmd.getOptionValue("dumpPath"));
 		return input;
 	}
 
@@ -29,11 +30,16 @@ public class ArgParser {
 		path.setRequired(true);
 
 		Option apiKey = new Option("k", "key", true, "Google Places API key");
-		apiKey.setRequired(true);
+		Option dumpFilePath = new Option("d", "dumpPath", true, "Path of the dump file to read restaurants from");
+		
+		OptionGroup mode = new OptionGroup();
+		mode.addOption(apiKey);
+		mode.addOption(dumpFilePath);
+		mode.setRequired(true);
 
 		Options options = new Options();
 		options.addOption(path);
-		options.addOption(apiKey);
+		options.addOptionGroup(mode);
 
 		return options;
 	}

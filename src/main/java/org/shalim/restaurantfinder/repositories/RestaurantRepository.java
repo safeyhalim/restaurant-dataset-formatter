@@ -2,6 +2,7 @@ package org.shalim.restaurantfinder.repositories;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,6 +19,7 @@ public class RestaurantRepository {
 	private String COL_COUNTRY = "country";
 	private String COL_GOOGLE_RATING = "google_rating";
 	private String COL_GOOGLE_TOTAL_RATINGS = "google_total_ratings";
+	private String COL_PRICE_LEVEL = "price_level";
 	
 	private String dbPath;
 	
@@ -62,8 +64,41 @@ public class RestaurantRepository {
 		}
 	}
 	
+	public void updateAllRestaurants(List<Restaurant> restaurants) throws SQLException {
+		PreparedStatement updateStatement = null;
+		String sql = String.format("update restaurant set %s = ?, %s = ?, %s = ?, "
+				+ "%s = ?, %s = ?, %s = ? where google_place_id = ?", 
+				COL_NAME, COL_CITY, COL_COUNTRY, COL_GOOGLE_RATING, 
+				COL_GOOGLE_TOTAL_RATINGS, 
+				COL_PRICE_LEVEL, 
+				COL_GOOGLE_PLACE_ID);
+		try {
+			updateStatement = prepareStatement(sql);
+			for (Restaurant restaurant : restaurants) {
+				updateStatement.setString(1, restaurant.getName());
+				updateStatement.setString(2, restaurant.getCity());
+				updateStatement.setString(3, restaurant.getCountry());
+				updateStatement.setDouble(4, restaurant.getGoogleRating());
+				updateStatement.setInt(5, restaurant.getGoogleTotalRatings());
+				updateStatement.setInt(6, restaurant.getPriceLevel());
+				updateStatement.setString(7, restaurant.getGooglePlacesId());
+				
+				updateStatement.addBatch();
+			}
+			updateStatement.executeBatch();
+		} finally {
+			if (updateStatement != null) {
+				updateStatement.close();
+			}
+		}
+	}
+	
 	private Statement createStatement() throws SQLException {
 		Connection connection = connect();
         return connection.createStatement();
+	}
+	
+	private PreparedStatement prepareStatement(String sql) throws SQLException {
+		return connect().prepareStatement(sql);
 	}
 }
