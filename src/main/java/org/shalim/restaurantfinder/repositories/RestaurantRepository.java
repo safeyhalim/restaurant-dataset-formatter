@@ -1,7 +1,6 @@
 package org.shalim.restaurantfinder.repositories;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +10,8 @@ import java.util.List;
 
 import org.shalim.restaurantfinder.model.Restaurant;
 
-public class RestaurantRepository {
+public class RestaurantRepository extends BaseRepository {
+	private static RestaurantRepository instance;
 	private String COL_ID = "id";
 	private String COL_GOOGLE_PLACE_ID = "google_place_id";
 	private String COL_NAME = "name";
@@ -21,14 +21,15 @@ public class RestaurantRepository {
 	private String COL_GOOGLE_TOTAL_RATINGS = "google_total_ratings";
 	private String COL_PRICE_LEVEL = "price_level";
 	
-	private String dbPath;
-	
-	public RestaurantRepository(String dbPath) {
-		this.dbPath = dbPath;
+	public static RestaurantRepository getInstance(String dbPath) {
+		if (instance == null) {
+			instance = new RestaurantRepository(dbPath);
+		}
+		return instance;
 	}
 	
-	private Connection connect() throws SQLException {
-		return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+	private RestaurantRepository(String dbPath) {
+		super(dbPath);
 	}
 	
 	public List<Restaurant> getAllRestaurants() throws SQLException {
@@ -91,14 +92,5 @@ public class RestaurantRepository {
 				updateStatement.close();
 			}
 		}
-	}
-	
-	private Statement createStatement() throws SQLException {
-		Connection connection = connect();
-        return connection.createStatement();
-	}
-	
-	private PreparedStatement prepareStatement(String sql) throws SQLException {
-		return connect().prepareStatement(sql);
 	}
 }
