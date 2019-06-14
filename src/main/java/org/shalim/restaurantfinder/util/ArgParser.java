@@ -22,7 +22,8 @@ public class ArgParser {
 			System.exit(1);
 		}
 		
-		Input input = new Input(cmd.getOptionValue("path"), cmd.getOptionValue("key"), cmd.getOptionValue("dumpPath"), cmd.hasOption("export-user-ratings"), cmd.hasOption("export-social-contexts"), cmd.getOptionValue("dataset-path"), getK(cmd));
+		Input input = new Input(cmd.getOptionValue("path"), cmd.getOptionValue("key"), cmd.getOptionValue("dumpPath"),
+				cmd.hasOption("export-user-ratings"), cmd.hasOption("export-social-contexts"), cmd.hasOption("export-all"), cmd.getOptionValue("dataset-path"), getK(cmd));
 		return input;
 	}
 
@@ -38,12 +39,14 @@ public class ArgParser {
 		
 		Option exportUserRatings = new Option("eu", "export-user-ratings", false, "Exports user ratings in a file in the same directory as the dbFile");
 		Option exportSocialContexts = new Option("es", "export-social-contexts", false, "Exports social contexts in a file in the same directory as the dbFile");
+		Option exportAll = new Option("a", "export-all", false, "Exports the whole dataset in the same directory where the dbFile exists");
 		
 		OptionGroup mode = new OptionGroup();
 		mode.addOption(apiKey);
 		mode.addOption(dumpFilePath);
 		mode.addOption(exportUserRatings);
 		mode.addOption(exportSocialContexts);
+		mode.addOption(exportAll);
 		mode.setRequired(false);
 		
 		Option folds = new Option("f", "folds", true, "Number of folds to create f folds training/testing (80%/20%) data set files");

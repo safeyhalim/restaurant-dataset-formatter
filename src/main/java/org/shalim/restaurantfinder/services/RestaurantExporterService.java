@@ -43,7 +43,7 @@ public class RestaurantExporterService {
 	
 	private static void exportRatingsToFile(Input input, List<Rating> ratings, boolean isGroup) throws IOException {
 		String dbPath = input.getDbPath();
-		String filePath = input.getDbPath().substring(0, dbPath.lastIndexOf('/')) + "/u_" + System.currentTimeMillis() + ".data";
+		String filePath = input.getDbPath().substring(0, dbPath.lastIndexOf('/')) + (isGroup ? "/g_" : "/u_") + System.currentTimeMillis() + ".data";
 		
 		File file = new File(filePath);
 		FileOutputStream fileOutputStream = new FileOutputStream(file);

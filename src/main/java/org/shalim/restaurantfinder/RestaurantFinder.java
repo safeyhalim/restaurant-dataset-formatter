@@ -12,6 +12,7 @@ import org.shalim.restaurantfinder.services.RestaurantDumpService;
 import org.shalim.restaurantfinder.services.RestaurantExporterService;
 import org.shalim.restaurantfinder.services.RestaurantKFoldService;
 import org.shalim.restaurantfinder.services.SocialContextExportService;
+import org.shalim.restaurantfinder.services.UserService;
 import org.shalim.restaurantfinder.util.ArgParser;
 import org.shalim.restaurantfinder.util.FilePathUtil;
 
@@ -19,9 +20,10 @@ public class RestaurantFinder {
 
 	public static void main(String[] args) throws SQLException, IOException {
 		Input input = ArgParser.parse(args);
-		
-		if (input.isExportUserRatings()) {
-			RestaurantExporterService.exportUserRatingsTabSeparated(input);
+		if (input.isExportAll()) {
+			exportAll(input);
+		} else if (input.isExportUserRatings()) {
+			exportRatings(input);
 		} else if (input.isExportSocialContexts()) {
 			exportSocialContexts(input);
 		} else if (input.getApiKey() != null) {
@@ -32,8 +34,22 @@ public class RestaurantFinder {
 			RestaurantKFoldService.createKFoldTrainingTestSets(input);
 		}
 		else {
-			System.err.println("Fatal error: API key and dump file path cannot both be missing!");
+			System.err.println("Unknown mode of operation");
 		}
+	}
+	
+	private static void exportAll(Input input) throws SQLException, IOException {
+		String dbPath = input.getDbPath();
+		String destinationFilePath = FilePathUtil.getFilePathWithoutName(dbPath);
+		RestaurantExporterService.exportUserRatingsTabSeparated(input);
+		RestaurantExporterService.exportGroupRatingsTabSeparated(input);
+		SocialContextExportService.exportSocialContextTabSeparated(dbPath, destinationFilePath);
+		UserService.exportUserGroupTabSeparated(dbPath, destinationFilePath);
+	}
+	
+	private static void exportRatings(Input input) throws SQLException, IOException {
+		RestaurantExporterService.exportUserRatingsTabSeparated(input);
+		RestaurantExporterService.exportGroupRatingsTabSeparated(input);
 	}
 	
 	private static void updateRestaurantsFromDump(Input input) throws IOException, SQLException {

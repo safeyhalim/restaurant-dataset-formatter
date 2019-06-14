@@ -8,19 +8,29 @@ public class Input {
 	private int k;
 	private boolean exportUserRatings;
 	private boolean exportSocialContexts;
+	private boolean exportAll;
 	
 	public Input() {}
 	
-	public Input(String dbPath, String apiKey, String dumpPath, boolean exportUserRatings, boolean exportSocialContexts, String dataSetPath, int k) {
+	public Input(String dbPath, String apiKey, String dumpPath, boolean exportUserRatings, boolean exportSocialContexts, boolean exportAll, String dataSetPath, int k) {
 		setDbPath(dbPath);
 		setApiKey(apiKey);
 		setDumpPath(dumpPath);
 		setExportUserRatings(exportUserRatings);
 		setExportSocialContexts(exportSocialContexts);
+		setExportAll(exportAll);
 		setDataSetPath(dataSetPath);
 		setK(k);
 	}
 	
+	public boolean isExportAll() {
+		return exportAll;
+	}
+
+	public void setExportAll(boolean exportAll) {
+		this.exportAll = exportAll;
+	}
+
 	public String getDbPath() {
 		return dbPath;
 	}
