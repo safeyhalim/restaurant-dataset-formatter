@@ -13,6 +13,7 @@ import org.shalim.restaurantfinder.services.RestaurantExporterService;
 import org.shalim.restaurantfinder.services.RestaurantKFoldService;
 import org.shalim.restaurantfinder.services.SocialContextExportService;
 import org.shalim.restaurantfinder.services.UserService;
+import org.shalim.restaurantfinder.services.personality.PersonalityExporterService;
 import org.shalim.restaurantfinder.util.ArgParser;
 import org.shalim.restaurantfinder.util.FilePathUtil;
 
@@ -45,6 +46,7 @@ public class RestaurantFinder {
 		RestaurantExporterService.exportGroupRatingsTabSeparated(input);
 		SocialContextExportService.exportSocialContextTabSeparated(dbPath, destinationFilePath);
 		UserService.exportUserGroupTabSeparated(dbPath, destinationFilePath);
+		PersonalityExporterService.exportParticipantPersonality(input);
 	}
 	
 	private static void exportRatings(Input input) throws SQLException, IOException {

@@ -1,9 +1,30 @@
 package org.shalim.restaurantfinder.services.helpers;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.shalim.restaurantfinder.model.Rating;
+import org.shalim.restaurantfinder.model.UserRating;
+import org.shalim.restaurantfinder.model.GroupRating;
 
 public class RatingsHelper {
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static List<Rating> findDuplicates(List<Rating> ratings, boolean isGroup) {
+		MultiKeyMap ratingsMap = new MultiKeyMap<>();
+		List<Rating> duplicateRatings = new ArrayList<>();
+		for (Rating rating : ratings) {
+			int raterId = isGroup ? ((GroupRating)rating).getGroupId() : ((UserRating)rating).getUserId();
+			if (ratingsMap.containsKey(raterId, rating.getRestaurantId())) {
+				duplicateRatings.add(rating);
+			}
+			else {
+				ratingsMap.put(raterId, rating.getRestaurantId(), rating);
+			}
+		}
+		return duplicateRatings;
+	}
+	
 	public static void normalizeRatingsInRangeOneToFive(List<Rating> ratings) {
 		normalizeRatingsInRange(ratings, 20);
 	}

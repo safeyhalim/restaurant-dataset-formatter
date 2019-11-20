@@ -35,6 +35,7 @@ public class UserGroupRepository extends BaseRepository {
 	        	userGroup.setId(rs.getInt(COL_ID));
 	        	userGroup.setGroupId(rs.getInt(COL_GROUP_ID));
 	        	userGroup.setParticipantId(rs.getInt(COL_PARTICIPANT_ID));
+	        	userGroups.add(userGroup);
 	        }
 	        return userGroups;
 		} finally {
