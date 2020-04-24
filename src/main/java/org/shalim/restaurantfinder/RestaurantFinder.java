@@ -44,6 +44,8 @@ public class RestaurantFinder {
 		String destinationFilePath = FilePathUtil.getFilePathWithoutName(dbPath);
 		RestaurantExporterService.exportUserRatingsTabSeparated(input);
 		RestaurantExporterService.exportGroupRatingsTabSeparated(input);
+		RestaurantExporterService.exportExternalGroupRatingsTabSeparated(input);
+		RestaurantExporterService.exportInternalGroupRatingsTabSeparated(input);
 		SocialContextExportService.exportSocialContextTabSeparated(dbPath, destinationFilePath);
 		UserService.exportUserGroupTabSeparated(dbPath, destinationFilePath);
 		PersonalityExporterService.exportParticipantPersonality(input);

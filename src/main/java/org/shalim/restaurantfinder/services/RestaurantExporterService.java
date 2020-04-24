@@ -24,16 +24,32 @@ import org.shalim.restaurantfinder.services.helpers.RatingsHelper;
  */
 public class RestaurantExporterService {
 	
+	private enum Mode {
+		USERS, GROUPS, INTERNAL_GROUPS, EXTERNAL_GROUPS
+	};
+	
 	public static void exportUserRatingsTabSeparated(Input input) throws SQLException, IOException {
 		List<Rating> userRatings = UserRatingsRepository.getInstance(input.getDbPath()).getAllUserRatings();
 		normalizeRatings(userRatings);
-		exportRatingsToFile(input, userRatings, false);
+		exportRatingsToFile(input, userRatings, Mode.USERS);
 	}
 	
 	public static void exportGroupRatingsTabSeparated(Input input) throws SQLException, IOException {
 		List<Rating> groupRatings = GroupRatingsRepository.getInstance(input.getDbPath()).getAllGroupRatings();
 		normalizeRatings(groupRatings);
-		exportRatingsToFile(input, groupRatings, true);
+		exportRatingsToFile(input, groupRatings, Mode.GROUPS);
+	}
+	
+	public static void exportInternalGroupRatingsTabSeparated(Input input) throws SQLException, IOException {
+		List<Rating> groupRatings = GroupRatingsRepository.getInstance(input.getDbPath()).getInternalGroupRatings();
+		normalizeRatings(groupRatings);
+		exportRatingsToFile(input, groupRatings, Mode.INTERNAL_GROUPS);
+	}
+	
+	public static void exportExternalGroupRatingsTabSeparated(Input input) throws SQLException, IOException {
+		List<Rating> groupRatings = GroupRatingsRepository.getInstance(input.getDbPath()).getExternalGroupRatings();
+		normalizeRatings(groupRatings);
+		exportRatingsToFile(input, groupRatings, Mode.EXTERNAL_GROUPS);
 	}
 	
 	private static void normalizeRatings(List<Rating> ratings) {
@@ -41,18 +57,36 @@ public class RestaurantExporterService {
 		RatingsHelper.setOverallRatingAverage(ratings);
 	}
 	
-	private static void exportRatingsToFile(Input input, List<Rating> ratings, boolean isGroup) throws IOException {
+	private static void exportRatingsToFile(Input input, List<Rating> ratings, Mode mode) throws IOException {
 		String dbPath = input.getDbPath();
-		String filePath = input.getDbPath().substring(0, dbPath.lastIndexOf('/')) + (isGroup ? "/g_" : "/u_") + System.currentTimeMillis() + ".data";
+		String filePath = input.getDbPath().substring(0, dbPath.lastIndexOf('/')) + "/" + getFilePrefixFromMode(mode) + "_" + System.currentTimeMillis() + ".data";
 		
 		File file = new File(filePath);
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream))) {
 			for (Rating rating : ratings) {
-				bufferedWriter.write((isGroup ? ((GroupRating)rating).getGroupId() : ((UserRating)rating).getUserId())
+				bufferedWriter.write((isGroup(mode) ? ((GroupRating)rating).getGroupId() : ((UserRating)rating).getUserId())
 						+ "\t" +  rating.getRestaurantId() + "\t" + new DecimalFormat("#.##").format(rating.getOverallRating()));
 				bufferedWriter.newLine();
 			}
 		}
+	}
+	
+	private static String getFilePrefixFromMode(Mode mode) {
+		switch(mode) {
+		case USERS:
+			return "u";
+		case GROUPS:
+			return "g";
+		case INTERNAL_GROUPS:
+			return "g_in";
+		case EXTERNAL_GROUPS:
+			return "g_ex";
+		}
+		return "u"; // Default if the mode is unknown
+	}
+	
+	private static boolean isGroup(Mode mode) {
+		return mode != Mode.USERS;
 	}
 }
